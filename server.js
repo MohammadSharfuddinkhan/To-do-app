@@ -6,6 +6,8 @@ let app = express()
 app.use(bodyParser.json())
 let db
 
+app.use(express.static("public"))
+
 async function go() {
   let client = new MongoClient("mongodb+srv://MohdSharfuddin:Sharfuddin123@cluster0.ujo5zlw.mongodb.net/TodoApp?retryWrites=true&w=majority")
   await client.connect()
@@ -16,7 +18,8 @@ async function go() {
 }
 go()
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  const items = await db.collection("items").find().toArray()
   res.send(`<!DOCTYPE html>
   <html>
   <head>
@@ -39,38 +42,35 @@ app.get("/", (req, res) => {
       </div>
       
       <ul class="list-group pb-5">
-        <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-          <span class="item-text">Fake example item #1</span>
-          <div>
-            <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-            <button class="delete-me btn btn-danger btn-sm">Delete</button>
-          </div>
-        </li>
-        <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-          <span class="item-text">Fake example item #2</span>
-          <div>
-            <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-            <button class="delete-me btn btn-danger btn-sm">Delete</button>
-          </div>
-        </li>
-        <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-          <span class="item-text">Fake example item #3</span>
-          <div>
-            <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-            <button class="delete-me btn btn-danger btn-sm">Delete</button>
-          </div>
-        </li>
+        ${items
+          .map((item) => {
+            return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+            <span class="item-text">${item.text}</span>
+            <div>
+              <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+              <button class="delete-me btn btn-danger btn-sm">Delete</button>
+            </div>
+          </li>`
+          })
+          .join("")}
       </ul>
       
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="/browser.js"></script>
   </body>
   </html>`)
 })
 
+var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.post("/create-item", urlencodedParser, async function (req, res) {
   await db.collection("items").insertOne({ text: req.body.item })
-  res.send("Thanks for submitting the form.")
+  res.redirect("/")
+})
+
+app.post("/update-item", jsonParser, (req, res) => {
+  console.log(req.body.text)
+  res.send("success")
 })
