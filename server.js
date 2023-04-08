@@ -1,3 +1,4 @@
+require("dotenv").config()
 let express = require("express")
 let { MongoClient, ObjectId } = require("mongodb")
 const bodyParser = require("body-parser")
@@ -7,14 +8,14 @@ app.use(bodyParser.json())
 let db
 
 app.use(express.static("public"))
-
+const DATABASE = process.env.DATABASE
 async function go() {
-  let client = new MongoClient("mongodb+srv://MohdSharfuddin:Sharfuddin123@cluster0.ujo5zlw.mongodb.net/TodoApp?retryWrites=true&w=majority")
+  let client = new MongoClient(DATABASE)
   await client.connect()
   db = client.db()
   console.log("connected to data base")
-  app.listen(3000)
-  console.log("server is running on port 3000")
+  app.listen(process.env.PORT)
+  console.log(`server is running on port ${process.env.PORT}`)
 }
 go()
 
