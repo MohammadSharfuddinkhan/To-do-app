@@ -42,20 +42,15 @@ app.get("/", async (req, res) => {
       </div>
       
       <ul id="item-list" class="list-group pb-5">
-        ${items
-          .map((item) => {
-            return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-            <span class="item-text">${item.text}</span>
-            <div>
-              <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-              <button data-id= "${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-            </div>
-          </li>`
-          })
-          .join("")}
+        
       </ul>
       
     </div>
+
+          <script>
+          let items = ${JSON.stringify(items)}
+          </script>
+
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
     <script src="/browser.js"></script>
   </body>
@@ -65,10 +60,9 @@ app.get("/", async (req, res) => {
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-app.post("/create-item", urlencodedParser, async function (req, res) {
-  await db.collection("items").insertOne({ text: req.body.text }, () => {
-    res.send("success")
-  })
+app.post("/create-item", async function (req, res) {
+  const info = await db.collection("items").insertOne({ text: req.body.text })
+  res.json({ _id: info.insertedId, text: req.body.text })
 })
 
 app.post("/update-item", jsonParser, async (req, res) => {
