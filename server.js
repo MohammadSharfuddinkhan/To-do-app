@@ -9,9 +9,10 @@ app.use(bodyParser.json())
 let db
 
 app.use(express.static("public"))
-const DATABASE = process.env.DATA_BASE
+const connectionString = process.env.DATA_BASE
+console.log(connectionString.startsWith("mongodb+srv://"))
 async function go() {
-  let client = new MongoClient(DATABASE)
+  let client = new MongoClient(connectionString)
   await client.connect()
   db = client.db()
   console.log("connected to data base")
