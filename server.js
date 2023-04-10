@@ -10,7 +10,11 @@ let db
 
 app.use(express.static("public"))
 const connectionString = process.env.DATA_BASE
-console.log(connectionString.startsWith("mongodb+srv://"))
+if (connectionString.startsWith("mongodb+srv://")) {
+  // Connect to MongoDB Atlas using the connection string
+} else {
+  console.error("Invalid connection string format")
+}
 async function go() {
   let client = new MongoClient(connectionString)
   await client.connect()
