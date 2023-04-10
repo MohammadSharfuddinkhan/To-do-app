@@ -9,7 +9,7 @@ app.use(bodyParser.json())
 let db
 
 app.use(express.static("public"))
-const DATABASE = process.env.DATABASE
+const DATABASE = process.env.DATA_BASE
 async function go() {
   let client = new MongoClient(DATABASE)
   await client.connect()
